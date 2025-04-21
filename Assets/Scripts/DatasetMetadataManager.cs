@@ -52,6 +52,7 @@ public static class DatasetMetadataManager
                 writer.WriteLine($"{DatasetMetadata.Key_ClusterCount}{KeyValueSeparator} {metadata.clusterCount}");
                 writer.WriteLine($"{DatasetMetadata.Key_NormalizationFactor}{KeyValueSeparator} {metadata.normalizationFactor.ToString(CultureInfo.InvariantCulture)}");
                 writer.WriteLine($"{DatasetMetadata.Key_DatasetName}{KeyValueSeparator} {metadata.datasetName}");
+                writer.WriteLine($"{DatasetMetadata.Key_LayerResolution}{KeyValueSeparator} {metadata.layerResolution}");
 
                 // --- Write List Fields ---
                 // Indices (List<int>) - Join with ListSeparatorInt

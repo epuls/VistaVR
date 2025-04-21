@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TMPro;
 using Unity.Mathematics;
 using Unity.VisualScripting;
@@ -19,6 +20,8 @@ public class SpatialDataset : MonoBehaviour
     public GameObject bakedClustersParent;
     public GameObject cellSquare;
     public GameObject bakeLayerPrefab;
+
+    public CellSpawner CellSpawner;
     
     // Raw Dataset Panel
     public TMP_InputField spatialProjectionPathInputField;
@@ -52,7 +55,7 @@ public class SpatialDataset : MonoBehaviour
 
     public string DatasetName = "Test_Dataset";
     private string bakedClusterImageFileName = "cluster_";
-    private string metaDataFileName = "dataset_info.txt";
+    private string metaDataFileName = "dataset_metadata.json";
     
     void Start()
     {
@@ -119,11 +122,13 @@ public class SpatialDataset : MonoBehaviour
         Debug.Log(Clusters["s_008um_00269_00526-1"]);
 
         normalizationFactor = FindMaxAbsoluteValue(Cells);
+        ClusterCount = FindClusterCount(Clusters);
         
         Debug.Log($"Normalization Factor: {normalizationFactor}");
         
         Debug.Log($"Baked clusters parent? : {bakedClustersParent}, cluster parent? : {spawnParent}");
         BakeCluster(curCluster, 1024, bakedClustersParent);
+        
     }
 
 
@@ -153,6 +158,26 @@ public class SpatialDataset : MonoBehaviour
         }
 
         return maxAbsValue;
+    }
+    
+    public static int FindClusterCount(Dictionary<string, int> vectorDict)
+    {
+        int maxValue = 0;
+
+        foreach (KeyValuePair<string, int> entry in vectorDict)
+        {
+            // Get the absolute value for both x and y components
+            int val = entry.Value;
+
+            
+            // Update the overall maximum if necessary
+            if (val > maxValue)
+            {
+                maxValue = val;
+            }
+        }
+
+        return maxValue;
     }
 
 
@@ -286,6 +311,7 @@ public class SpatialDataset : MonoBehaviour
         {
             //LayerManager.Instance.BuildDatasetLayers(bakedClustersParent, "Cluster");
             Debug.Log("Dataset loaded!");
+            LayerManager.Instance.SetDefaultFilenames(".png");
             SaveLayerTextures();
             SaveMetadata();
             
@@ -294,6 +320,7 @@ public class SpatialDataset : MonoBehaviour
 
     void SaveMetadata()
     {
+        /*
         // 1. Create an instance of the metadata container
         DatasetMetadata dataToSave = new DatasetMetadata();
 
@@ -329,15 +356,61 @@ public class SpatialDataset : MonoBehaviour
         {
             Debug.LogError("Failed to save data.");
         }
+        */
+        
+        if (LayerManager.Instance == null || LayerManager.Instance.Layers == null) // Assuming LayerManager has a List<Layer> Layers
+        {
+            Debug.LogError("LayerManager or its Layers list is missing!");
+            return;
+        }
+        
+        
+
+        // 1. Create the main container
+        DatasetMetadataContainer container = new DatasetMetadataContainer();
+
+        // 2. Populate dataset-level metadata (get these values from your tool/manager)
+        container.DatasetName = "JSON_TEST"; // Example method
+        container.LayerResolution = 2048; // Example method
+        container.NormalizationFactor = normalizationFactor; // Example method
+        container.ClusterCount = ClusterCount; // Example method
+
+
+        // 3. Convert your runtime Layer objects into LayerData objects
+        container.Layers = LayerManager.Instance.Layers // Assuming layerManager.Layers is List<Layer>
+            .Where(layer => layer != null) // Avoid null layers if possible
+            .Select(runtimeLayer => new LayerData(runtimeLayer)) // Use the constructor
+            .ToList();
+
+        // 4. (Optional but recommended) Ensure layers are sorted by index if not already guaranteed
+        container.Layers = container.Layers.OrderBy(l => l.Index).ToList();
+        
+        string fileName = metaDataFileName;
+        string saveFilePath = Path.Combine(bakedDatasetPath, fileName);
+
+
+        // 5. Call the static save method
+        bool success = DatasetMetadataManager_Json.SaveMetadata(container, saveFilePath);
+
+        if (success)
+        {
+            Debug.Log("Dataset successfully saved via JSON.");
+        }
+        else
+        {
+            Debug.LogError("Failed to save dataset via JSON.");
+        }
         
     }
     
-    void LoadMetadata()
+    void LoadMetadata(GameObject clusterParent)
     {
-        // 1. Define the path to load from
         string fileName = metaDataFileName;
         string folderPath = bakedDatasetPath;
-        string fullPath = Path.Combine(folderPath, fileName);
+        string loadFilePath = Path.Combine(folderPath, fileName);
+        /*
+        // 1. Define the path to load from
+        
         
         Debug.Log($"Loading Dataset from Path: {fullPath}");
 
@@ -359,6 +432,57 @@ public class SpatialDataset : MonoBehaviour
 
 
         // Access any other fields you added...
+        */
+        
+                // 1. Call the static load method
+        DatasetMetadataContainer loadedData = DatasetMetadataManager_Json.LoadMetadata(loadFilePath);
+
+        if (loadedData == null)
+        {
+            Debug.LogError($"Failed to load dataset from {loadFilePath}. Check previous errors.");
+            // Handle error appropriately (e.g., show message to user, load defaults)
+            return;
+        }
+
+        ClusterCount = loadedData.ClusterCount;
+        normalizationFactor = loadedData.NormalizationFactor;
+        DatasetName = loadedData.DatasetName;
+
+
+
+        // 4. Create runtime Layer objects from the loaded LayerData
+        if (loadedData.Layers != null)
+        {
+            foreach (LayerData data in loadedData.Layers) // Assumes Layers are already sorted by index from LoadMetadata
+            {
+
+                Layer newLayer = data.ToLayerObject();
+                
+                //  Spawn datalayer prefab and set parent to clusterParent
+                var bakedLayerObj = GameObject.Instantiate(bakeLayerPrefab, Vector3.zero, Quaternion.identity);
+                bakedLayerObj.name = $"{newLayer.Name}";
+                bakedLayerObj.transform.SetParent(clusterParent.transform);
+            
+
+                string filename = newLayer.AssociatedFileName;
+                string fullFilepath = Path.Combine(bakedDatasetPath, filename);
+                Texture2D loadedT2D = TextureLoader.LoadTexture2DFromFile(fullFilepath);
+                bakedLayerObj.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", loadedT2D);
+                RenderTexture loadedRT = TextureLoader.LoadRenderTextureFromFile(fullFilepath, RenderTextureFormat.Default);
+            
+                //LayerManager.Instance.BuildLayer(bakedLayerObj, newLayer.Name, loadedRT, true);
+                LayerManager.Instance.BuildLoadedLayer(bakedLayerObj, newLayer, loadedT2D, loadedRT);
+                
+
+
+                LayerManager.Instance.Layers.Add(newLayer); // Add the fully configured layer
+                LayerEvents.UpdateLayerPositions.Invoke();
+            }
+        }
+
+        Debug.Log($"Dataset successfully loaded from {loadFilePath}. Applied {loadedData.Layers?.Count ?? 0} layers.");
+
+        LayerEvents.UpdateLayerPositions.Invoke();
     }
 
     void ImportImageLayer(string filepath, string layerName)
@@ -382,8 +506,8 @@ public class SpatialDataset : MonoBehaviour
     {
         foreach (Layer l in LayerManager.Instance.Layers)
         {
-            string fileName = $"{bakedClusterImageFileName}{l.Index}.png";
-            string fullPath = Path.Combine(bakedDatasetPath, fileName);
+            
+            string fullPath = Path.Combine(bakedDatasetPath, l.AssociatedFileName);
             
             Debug.Log($"Attempting to save RenderTexture to: {fullPath}");
             
@@ -405,8 +529,9 @@ public class SpatialDataset : MonoBehaviour
     {
         DatasetPanel.SetActive(false);
         
-        LoadMetadata();
+        LoadMetadata(clusterParent);
 
+        /*
         // Load Clusters
         for (int i = 0; i < ClusterCount; i++)
         {
@@ -427,6 +552,7 @@ public class SpatialDataset : MonoBehaviour
             LayerEvents.UpdateLayerPositions.Invoke();
             
         }
+        */
         
         
     }

@@ -22,6 +22,7 @@ public class LayerManager : MonoBehaviour
     public List<string> loadedLayerNames;
     
     
+    
     void Start()
     {
         if (Instance == null)
@@ -49,6 +50,14 @@ public class LayerManager : MonoBehaviour
     private void OnDisable()
     {
         LayerEvents.MoveLayer.RemoveListener(MoveLayerPos);
+    }
+
+    public void SetDefaultFilenames(string postfix)
+    {
+        foreach (Layer l in Layers)
+        {
+            l.AssociatedFileName = $"{l.Name}{postfix}";
+        }
     }
 
     public void Swap<T>(IList<T> list, int indexA, int indexB)
@@ -119,6 +128,7 @@ public class LayerManager : MonoBehaviour
         }
         else
         {
+            
             if (typeOverride == 0)
             {
                 int tmp = Layers.Count;
@@ -154,6 +164,16 @@ public class LayerManager : MonoBehaviour
         addLayer.LayerRenderTexture = layerRT;
         addLayer.LayerType = (Layer.DataType)layerType;
         Layers.Add(addLayer);
+    }
+
+    public void BuildLoadedLayer(GameObject layerOb, Layer layer, Texture2D texture2D, RenderTexture renderTexture)
+    {
+        var uiObjTmp = SpawnUIRepresentation(UILayerRepresentationPrefab, UILayerParent);
+        layer.LayerUIScript = uiObjTmp.GetComponent<LayerUI>();
+        layer.LayerUIGameObject = uiObjTmp;
+        layer.LayerUIScript.SetLayer(layerOb.transform, layer.Name, layer);
+        layer.LayerRenderTexture = renderTexture;
+        layer.LayerTexture2D = texture2D;
     }
 
     // Expects a layout group to manage pos
@@ -203,6 +223,11 @@ public class Layer
         LayerType = DataType.Cluster;
     }
 
+    public Layer()
+    {
+        // Empty constructor
+    }
+
     public enum DataType
     {
         Cluster,
@@ -219,6 +244,7 @@ public class Layer
     public RenderTexture LayerRenderTexture;
     public Texture2D LayerTexture2D;
     public DataType LayerType;
+    public string AssociatedFileName;
 }
 
 

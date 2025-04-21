@@ -12,6 +12,7 @@ public class DatasetMetadata
     public int clusterCount = 0; // Provide default values
     public float normalizationFactor = 1.0f;
     public string datasetName = "Unnamed Dataset"; // Example of adding another field
+    public int layerResolution = 2048;
     public List<int> indices;
     public List<string> layerNames;
     public List<int> layerTypes;
@@ -21,6 +22,7 @@ public class DatasetMetadata
     public const string Key_ClusterCount = "clusterCount";
     public const string Key_NormalizationFactor = "normalizationFactor";
     public const string Key_DatasetName = "datasetName";
+    public const string Key_LayerResolution = "layerResolution";
     public const string Key_Indices = "layerIndices";
     public const string Key_LayerNames = "layerNames";
     public const string Key_LayerTypes = "layerTypes";
