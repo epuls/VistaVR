@@ -67,7 +67,7 @@ public class CSVImporter : MonoBehaviour
                     }
     
                     // Create a Vector2 from the parsed coordinates and add to the dictionary.
-                    cellDictionary[cellBarcode] = new Vector2(x, y);
+                    cellDictionary[cellBarcode] = new Vector2(x, y) / 27762f;
                 }
             }
             catch (Exception ex)

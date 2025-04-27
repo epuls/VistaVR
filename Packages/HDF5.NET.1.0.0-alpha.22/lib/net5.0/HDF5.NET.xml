@@ -1,0 +1,998 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HDF5.NET</name>
+    </assembly>
+    <members>
+        <member name="T:HDF5.NET.ArrayExtensions">
+            <summary>
+            Contains extensions to simplify the conversion of a 1-dimensional array to an up 6-simensional array.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.ArrayExtensions.ToArray2D``1(``0[],System.Int64,System.Int64)">
+            <summary>
+            Converts the 1-dimensional input array into a 2-dimensional output array by coping the data. See also <seealso href="https://github.com/Apollo3zehn/HDF5.NET#722-high-performance-method-2d-only">HDF5.NET</seealso> for a copy-free version.
+            </summary>
+            <typeparam name="T">The base type of the array to convert.</typeparam>
+            <param name="data">The array to convert.</param>
+            <param name="dim0">The size of dimension 0.</param>
+            <param name="dim1">The size of dimension 1.</param>
+            <returns>A 2-dimensional array.</returns>
+        </member>
+        <member name="M:HDF5.NET.ArrayExtensions.ToArray3D``1(``0[],System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Converts the 1-dimensional input array into a 3-dimensional output array by coping the data.
+            </summary>
+            <typeparam name="T">The base type of the array to convert.</typeparam>
+            <param name="data">The array to convert.</param>
+            <param name="dim0">The size of dimension 0.</param>
+            <param name="dim1">The size of dimension 1.</param>
+            <param name="dim2">The size of dimension 2.</param>
+            <returns>A 3-dimensional array.</returns>
+        </member>
+        <member name="M:HDF5.NET.ArrayExtensions.ToArray4D``1(``0[],System.Int64,System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Converts the 1-dimensional input array into a 4-dimensional output array by coping the data.
+            </summary>
+            <typeparam name="T">The base type of the array to convert.</typeparam>
+            <param name="data">The array to convert.</param>
+            <param name="dim0">The size of dimension 0.</param>
+            <param name="dim1">The size of dimension 1.</param>
+            <param name="dim2">The size of dimension 2.</param>
+            <param name="dim3">The size of dimension 3.</param>
+            <returns>A 4-dimensional array.</returns>
+        </member>
+        <member name="M:HDF5.NET.ArrayExtensions.ToArray5D``1(``0[],System.Int64,System.Int64,System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Converts the 1-dimensional input array into a 5-dimensional output array by coping the data.
+            </summary>
+            <typeparam name="T">The base type of the array to convert.</typeparam>
+            <param name="data">The array to convert.</param>
+            <param name="dim0">The size of dimension 0.</param>
+            <param name="dim1">The size of dimension 1.</param>
+            <param name="dim2">The size of dimension 2.</param>
+            <param name="dim3">The size of dimension 3.</param>
+            <param name="dim4">The size of dimension 4.</param>
+            <returns>A 5-dimensional array.</returns>
+        </member>
+        <member name="M:HDF5.NET.ArrayExtensions.ToArray6D``1(``0[],System.Int64,System.Int64,System.Int64,System.Int64,System.Int64,System.Int64)">
+            <summary>
+            Converts the 1-dimensional input array into a 6-dimensional output array by coping the data.
+            </summary>
+            <typeparam name="T">The base type of the array to convert.</typeparam>
+            <param name="data">The array to convert.</param>
+            <param name="dim0">The size of dimension 0.</param>
+            <param name="dim1">The size of dimension 1.</param>
+            <param name="dim2">The size of dimension 2.</param>
+            <param name="dim3">The size of dimension 3.</param>
+            <param name="dim4">The size of dimension 4.</param>
+            <param name="dim5">The size of dimension 5.</param>
+            <returns>A 6-dimensional array.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5AttributableObject">
+            <summary>
+            A base class for types that can hold HDF5 attributes.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5AttributableObject.Attributes">
+            <summary>
+            Gets an enumerable of the available attributes.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5AttributableObject.AttributeExists(System.String)">
+            <summary>
+            Checks if the attribute with the specified <paramref name="name"/> exist.
+            </summary>
+            <param name="name">The name of the attribute.</param>
+            <returns>A boolean which indicates if the attribute exists.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5AttributableObject.Attribute(System.String)">
+            <summary>
+            Gets the attribute named <paramref name="name"/>.
+            </summary>
+            <param name="name">The name of the attribute.</param>
+            <returns>The requested attribute.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5Attribute">
+            <summary>
+            An HDF5 attribute.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Attribute.Name">
+            <summary>
+            Gets the attribute name.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Attribute.Space">
+            <summary>
+            Gets the data space.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Attribute.Type">
+            <summary>
+            Gets the data type.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5Attribute.Read``1">
+            <summary>
+            Reads the data. The type parameter <typeparamref name="T"/> must match the <see langword="unmanaged" /> constraint.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <returns>The read data as array of <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Attribute.ReadCompound``1(System.Func{System.Reflection.FieldInfo,System.String})">
+            <summary>
+            Reads the compound data. The type parameter <typeparamref name="T"/> must match the <see langword="struct" /> constraint. Nested fields with nullable references are not supported.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <param name="getName">An optional function to map the field names of <typeparamref name="T"/> to the member names of the HDF5 compound type.</param>
+            <returns>The read data as array of <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Attribute.ReadCompound">
+            <summary>
+            Reads the compound data. This is the slowest but most flexible option to read compound data as no prior type knowledge is required.
+            </summary>
+            <returns>The read data as array of a dictionary with the keys corresponding to the compound member names and the values being the member data.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Attribute.ReadString">
+            <summary>
+            Reads the string data.
+            </summary>
+            <returns>The read data as array of <see cref="T:System.String"/>.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5CommitedDatatype">
+            <summary>
+            An HDF5 commited data type (also known as transient, shareable or named data type).
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5Constants">
+            <summary>
+            A class to group constants.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5Constants.Unlimited">
+            <summary>
+            This constant is used to specify an unlimited dimension.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataLayout">
+            <summary>
+            An HDF5 data layout.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataLayout.Class">
+            <summary>
+            Gets the data layout class.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataLayout.ChunkDimensions">
+            <summary>
+            Gets the chunk dimensions.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataLayoutClass">
+            <summary>
+            Specifies the data layout class.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataLayoutClass.Compact">
+            <summary>
+            The data is stored within the object's metadata.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataLayoutClass.Contiguous">
+            <summary>
+            THe data is stored as one contiguous block of data.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataLayoutClass.Chunked">
+            <summary>
+            The data is stored in chunks.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataLayoutClass.VirtualStorage">
+            <summary>
+            The data is a virtual view composed of other datasets.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5Dataset">
+            <summary>
+            An HDF5 dataset.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataset.File">
+            <summary>
+            A reference to the <see cref="T:HDF5.NET.H5File"/> that this dataset belongs to.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataset.Space">
+            <summary>
+            Gets the data space.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataset.Type">
+            <summary>
+            Gets the data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataset.Layout">
+            <summary>
+            Gets the data layout.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataset.FillValue">
+            <summary>
+            Gets the fill value.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.Read(HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the data.
+            </summary>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>The read data as array of <see cref="T:System.Byte"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.Read``1(HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the data. The type parameter <typeparamref name="T"/> must match the <see langword="unmanaged" /> constraint.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>The read data as array of <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.AsQueryable``1(HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Queries the data. More information: <seealso href="https://github.com/Apollo3zehn/HDF5.NET#42-experimental-iqueryable-1-dimensional-data-only">HDF5.NET</seealso>.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>A queryable of type <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.Read``1(System.Memory{``0},HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the data. The type parameter <typeparamref name="T"/> must match the <see langword="unmanaged" /> constraint.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <param name="buffer">The target memory buffer.</param>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.ReadCompound``1(System.Func{System.Reflection.FieldInfo,System.String},HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the compound data. The type parameter <typeparamref name="T"/> must match the <see langword="struct" /> constraint. Nested fields with nullable references are not supported.
+            </summary>
+            <typeparam name="T">The type of the data to read.</typeparam>
+            <param name="getName">An optional function to map the field names of <typeparamref name="T"/> to the member names of the HDF5 compound type.</param>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>The read data as array of <typeparamref name="T"/>.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.ReadCompound(HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the compound data. This is the slowest but most flexible option to read compound data as no prior type knowledge is required.
+            </summary>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>The read data as array of a dictionary with the keys corresponding to the compound member names and the values being the member data.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Dataset.ReadString(HDF5.NET.Selection,HDF5.NET.Selection,System.UInt64[],HDF5.NET.H5DatasetAccess)">
+            <summary>
+            Reads the string data.
+            </summary>
+            <param name="fileSelection">The selection within the source HDF5 dataset.</param>
+            <param name="memorySelection">The selection within the target memory.</param>
+            <param name="memoryDims">The dimensions of the target memory buffer.</param>
+            <param name="datasetAccess">The dataset access properties.</param>
+            <returns>The read data as array of <see cref="T:System.String"/>.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5Dataspace">
+            <summary>
+            An HDF5 dataspace.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataspace.Rank">
+            <summary>
+            Gets the dataspace rank.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataspace.Type">
+            <summary>
+            Gets the dataspace type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataspace.Dimensions">
+            <summary>
+            Gets the dataspace dimensions.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Dataspace.MaxDimensions">
+            <summary>
+            Gets the maximum dataspace dimensions.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataspaceType">
+            <summary>
+            The dataspace type.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataspaceType.Scalar">
+            <summary>
+            A scalar dataspace.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataspaceType.Simple">
+            <summary>
+            A simple dataspace.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataspaceType.Null">
+            <summary>
+            A null-dataspace.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType">
+            <summary>
+            An HDF5 data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.FixedPointType">
+            <summary>
+            The fixed-point data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.FixedPointType.IsSigned">
+            <summary>
+            Gets a boolean which indicates if the data type is signed.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.FloatingPointType">
+            <summary>
+            The floating-point data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.StringType">
+            <summary>
+            The string data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.BitFieldType">
+            <summary>
+            The bitfield data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.OpaqueType">
+            <summary>
+            The opaque data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.CompoundType">
+            <summary>
+            The compound data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.CompoundType.CompoundMember">
+            <summary>
+            A compound member.
+            </summary>
+            <param name="Name">The member name.</param>
+            <param name="Offset">The offset of the member in the parent compound data type.</param>
+            <param name="Type">The member data type.</param>
+        </member>
+        <member name="M:HDF5.NET.H5DataType.CompoundType.CompoundMember.#ctor(System.String,System.Int32,HDF5.NET.H5DataType)">
+            <summary>
+            A compound member.
+            </summary>
+            <param name="Name">The member name.</param>
+            <param name="Offset">The offset of the member in the parent compound data type.</param>
+            <param name="Type">The member data type.</param>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.CompoundType.CompoundMember.Name">
+            <summary>The member name.</summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.CompoundType.CompoundMember.Offset">
+            <summary>The offset of the member in the parent compound data type.</summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.CompoundType.CompoundMember.Type">
+            <summary>The member data type.</summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.CompoundType.Members">
+            <summary>
+            Gets an array of members.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.ReferenceType">
+            <summary>
+            The reference data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.EnumerationType">
+            <summary>
+            The enumeration data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.VariableLengthType">
+            <summary>
+            The variable-length data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataType.ArrayType">
+            <summary>
+            The array data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.ArrayType.BaseType">
+            <summary>
+            Gets the base data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Class">
+            <summary>
+            Gets the data type class.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Size">
+            <summary>
+            Gets the size of the data type in bytes.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.FixedPoint">
+            <summary>
+            Gets the fixed-point data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.FloatingPoint">
+            <summary>
+            Gets the floating-point data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.String">
+            <summary>
+            Gets the string data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.BitField">
+            <summary>
+            Gets the bitfield data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Opaque">
+            <summary>
+            Gets the opaque data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Compound">
+            <summary>
+            Gets the compound data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Reference">
+            <summary>
+            Gets the reference data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Enumeration">
+            <summary>
+            Gets the enumeration data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.VariableLength">
+            <summary>
+            Gets the variable-length data type.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DataType.Array">
+            <summary>
+            Gets the array data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DataTypeClass">
+            <summary>
+            Specifies the data type class.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.FixedPoint">
+            <summary>
+            A fixed-point number.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.FloatingPoint">
+            <summary>
+            A floating-point number.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Time">
+            <summary>
+            A time structure. Not supported.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.String">
+            <summary>
+            A string.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.BitField">
+            <summary>
+            A bitfield.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Opaque">
+            <summary>
+            An opaque blob of bytes.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Compound">
+            <summary>
+            A compound data type.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Reference">
+            <summary>
+            A reference.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Enumerated">
+            <summary>
+            An enumeration.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.VariableLength">
+            <summary>
+            A variable-length data type (string or sequence).
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5DataTypeClass.Array">
+            <summary>
+            An array data type.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5File">
+            <summary>
+            An HDF5 file object. This is the entry-point to work with HDF5 files.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5File.Path">
+            <summary>
+            Gets the path of the opened HDF5 file. The value is :memory: if the file is not loaded from a file system.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5File.ChunkCacheFactory">
+            <summary>
+            Gets or sets the current chunk cache factory.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5File.DefaultChunkCacheFactory">
+            <summary>
+            The default chunk cache factory.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5File.OpenRead(System.String)">
+            <summary>
+            Opens an HDF5 file for reading. Please see the <seealso href="https://learn.microsoft.com/en-us/dotnet/api/system.io.file.openread#remarks">Remarks</seealso> section for more information how the file is opened.
+            </summary>
+            <param name="filePath">The file to open.</param>
+        </member>
+        <member name="M:HDF5.NET.H5File.Open(System.String,System.IO.FileMode,System.IO.FileAccess,System.IO.FileShare,System.Boolean)">
+            <summary>
+            Opens an HDF5 file.
+            </summary>
+            <param name="filePath">The file to open.</param>
+            <param name="mode">A <see cref="T:System.IO.FileMode"/> value that specifies whether a file is created if one does not exist, and determines whether the contents of existing files are retained or overwritten.</param>
+            <param name="fileAccess">A <see cref="T:System.IO.FileAccess"/> value that specifies the operations that can be performed on the file.</param>
+            <param name="fileShare">A <see cref="T:System.IO.FileShare"/> value specifying the type of access other threads have to the file.</param>
+            <param name="useAsync">A boolean which indicates if the file be opened with the <see cref="F:System.IO.FileOptions.Asynchronous"/> flag.</param>
+        </member>
+        <member name="M:HDF5.NET.H5File.Open(System.IO.Stream)">
+            <summary>
+            Opens an HDF5 stream.
+            </summary>
+            <param name="stream">The stream to open.</param>
+            <returns></returns>
+        </member>
+        <member name="M:HDF5.NET.H5File.Dispose">
+            <inheritdoc />
+        </member>
+        <member name="T:HDF5.NET.H5FillValue">
+            <summary>
+            An HDF5 fill value.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5FillValue.Value">
+            <summary>
+            Gets the raw fill value as array of <see cref="T:System.Byte"/>.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5FillValue.GetValue``1">
+            <summary>
+            Gets the fill value as value of type <typeparamref name="T"/>. The type parameter <typeparamref name="T"/> must match the <see langword="unmanaged" /> constraint.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.FilterFunc">
+            <summary>
+            A delegate which describes a filter function.
+            </summary>
+            <param name="flags">The filter flags.</param>
+            <param name="parameters">The filter parameters.</param>
+            <param name="buffer">The source buffer.</param>
+            <returns>The target buffer.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5Filter">
+            <summary>
+            A class to manage filters.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5Filter.Register(HDF5.NET.H5FilterID,System.String,HDF5.NET.FilterFunc)">
+            <summary>
+            Registers a new filter.
+            </summary>
+            <param name="identifier">The filter identifier.</param>
+            <param name="name">The filter name.</param>
+            <param name="filterFunc">The filter function.</param>
+        </member>
+        <member name="T:HDF5.NET.H5FilterFlags">
+            <summary>
+            Specifies the filter flags.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterFlags.Decompress">
+            <summary>
+            A flag which indicates if the provided buffer should be decompressed.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterFlags.SkipEdc">
+            <summary>
+            A flag which indicates if EDC filters should be skipped.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5FilterID">
+            <summary>
+            Specifies the filter identifier.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.NA">
+            <summary>
+            No filter.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.Deflate">
+            <summary>
+            Deflation like gzip.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.Shuffle">
+            <summary>
+            Shuffle the data.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.Fletcher32">
+            <summary>
+            Fletcher32 checksum of EDC.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.Szip">
+            <summary>
+            Szip compression
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.Nbit">
+            <summary>
+            NBit compression.
+            </summary>
+        </member>
+        <member name="F:HDF5.NET.H5FilterID.ScaleOffset">
+            <summary>
+            Scale+offset compression.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5Group">
+            <summary>
+            An HDF5 group.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Group.Children">
+            <summary>
+            Gets an enumerable of the available children.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5Group.LinkExists(System.String,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Checks if the link with the specified <paramref name="path"/> exist.
+            </summary>
+            <param name="path">The path of the link.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>A boolean which indicates if the link exists.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.Get(System.String,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets the object that is at the given <paramref name="path"/>.
+            </summary>
+            <param name="path">The path of the object.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>The requested object.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.Get(HDF5.NET.H5ObjectReference,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets the object that is at the given <paramref name="reference"/>.
+            </summary>
+            <param name="reference">The reference of the object.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>The requested object.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.Group(System.String,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets the group that is at the given <paramref name="path"/>.
+            </summary>
+            <param name="path">The path of the object.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>The requested group.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.Dataset(System.String,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets the dataset that is at the given <paramref name="path"/>.
+            </summary>
+            <param name="path">The path of the object.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>The requested dataset.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.CommitedDatatype(System.String,HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets the commited data type that is at the given <paramref name="path"/>.
+            </summary>
+            <param name="path">The path of the object.</param>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>The requested commited data type.</returns>
+        </member>
+        <member name="M:HDF5.NET.H5Group.GetChildren(HDF5.NET.H5LinkAccess)">
+            <summary>
+            Gets an enumerable of the available children using the optionally specified <paramref name="linkAccess"/>.
+            </summary>
+            <param name="linkAccess">The link access properties.</param>
+            <returns>An enumerable of the available children.</returns>
+        </member>
+        <member name="T:HDF5.NET.H5NameAttribute">
+            <summary>
+            Specifies the member name that is present in the HDF5 compound data type.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.H5NameAttribute.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.H5NameAttribute"/> instance.
+            </summary>
+            <param name="name">The name of the member.</param>
+        </member>
+        <member name="P:HDF5.NET.H5NameAttribute.Name">
+            <summary>
+            Gets the name of the member.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5Object">
+            <summary>
+            A base class HDF5 objects.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5Object.Name">
+            <summary>
+            Gets the name.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5ObjectReference">
+            <summary>
+            An HDF5 object reference.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5DatasetAccess">
+            <summary>
+            A structure which controls how the dataset is accessed. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___d_a_p_l.html">hdfgroup.org</seealso>
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DatasetAccess.ExternalFilePrefix">
+            <summary>
+            Gets the external dataset storage file prefix. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___d_a_p_l.html#gad487f84157fd0944cbe1cbd4dea4e1b8">hdfgroup.org</seealso>.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5DatasetAccess.ChunkCacheFactory">
+            <summary>
+            Gets the factory to create the chunk cache. If <see langword="null"/>, the factory of the <see cref="P:HDF5.NET.H5File.ChunkCacheFactory"/> property is used.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5LinkAccess">
+            <summary>
+            A structure which controls how the link is accessed. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___l_a_p_l.html">hdfgroup.org</seealso>.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5LinkAccess.ExternalLinkPrefix">
+            <summary>
+            Gets the prefix to be applied to external link paths. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___l_a_p_l.html#gafa5eced13ba3a00cdd65669626dc7294">hdfgroup.org</seealso>.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5RegionReference">
+            <summary>
+            An HDF5 region reference.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.H5UnresolvedLink">
+            <summary>
+            An HDF5 link that could not be resolved.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.H5UnresolvedLink.Reason">
+            <summary>
+            Gets an exception that indicates the reason why the link could not be resolved.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.IChunkCache">
+            <summary>
+            Caches chunks during a read operation.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.IChunkCache.GetChunkAsync(System.UInt64[],System.Func{System.Threading.Tasks.Task{System.Memory{System.Byte}}})">
+            <summary>
+            Tries to get the chunk at the given position.
+            </summary>
+            <param name="indices">The chunk position.</param>
+            <param name="chunkLoader">The chunk load is used whenever the chunk is not already cached.</param>
+            <returns>The chunk.</returns>
+        </member>
+        <member name="T:HDF5.NET.DelegateSelection">
+            <summary>
+            A selection which uses a delegate to get the information about how to walk through the data.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.DelegateSelection.#ctor(System.UInt64,System.Func{System.UInt64[],System.Collections.Generic.IEnumerable{HDF5.NET.Step}})">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.DelegateSelection"/> instance.
+            </summary>
+            <param name="totalElementCount">The total number of elements which is used to preallocate the returned buffer.</param>
+            <param name="walker">The user-defined walker delegate.</param>
+        </member>
+        <member name="P:HDF5.NET.DelegateSelection.TotalElementCount">
+            <inheritdoc />
+        </member>
+        <member name="M:HDF5.NET.DelegateSelection.Walk(System.UInt64[])">
+            <inheritdoc />
+        </member>
+        <member name="T:HDF5.NET.HyperslabSelection">
+            <summary>
+            A hyperslab is a selection of elements from a hyper rectangle.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.HyperslabSelection.#ctor(System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.HyperslabSelection"/> instance of rank 1. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___h5_s.html#ga6adfdf1b95dc108a65bf66e97d38536d">hdfgroup.org</seealso>.
+            </summary>
+            <param name="start">The start coordinate of the block.</param>
+            <param name="block">The block size.</param>
+        </member>
+        <member name="M:HDF5.NET.HyperslabSelection.#ctor(System.UInt64,System.UInt64,System.UInt64,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.HyperslabSelection"/> instance of rank 1. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___h5_s.html#ga6adfdf1b95dc108a65bf66e97d38536d">hdfgroup.org</seealso>.
+            </summary>
+            <param name="start">The start coordinate of the block.</param>
+            <param name="stride">The number of elements to separate each block to be selected.</param>
+            <param name="count">The number of blocks to select.</param>
+            <param name="block">The block size.</param>
+        </member>
+        <member name="M:HDF5.NET.HyperslabSelection.#ctor(System.Int32,System.UInt64[],System.UInt64[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.HyperslabSelection"/> instance of rank <paramref name="rank"/>. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___h5_s.html#ga6adfdf1b95dc108a65bf66e97d38536d">hdfgroup.org</seealso>.
+            </summary>
+            <param name="rank">The rank of the selection.</param>
+            <param name="starts">The start coordinate of the block along each dimension.</param>
+            <param name="blocks">The block size along each dimension.</param>
+        </member>
+        <member name="M:HDF5.NET.HyperslabSelection.#ctor(System.Int32,System.UInt64[],System.UInt64[],System.UInt64[],System.UInt64[])">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.HyperslabSelection"/> instance of rank <paramref name="rank"/>. Reference: <seealso href="https://docs.hdfgroup.org/hdf5/v1_10/group___h5_s.html#ga6adfdf1b95dc108a65bf66e97d38536d">hdfgroup.org</seealso>.
+            </summary>
+            <param name="rank"></param>
+            <param name="starts">The start coordinate of the block along each dimension.</param>
+            <param name="strides">The number of elements to separate each block to be selected along each dimension.</param>
+            <param name="counts">The number of blocks to select along each dimension.</param>
+            <param name="blocks">The block size along each dimension.</param>
+        </member>
+        <member name="P:HDF5.NET.HyperslabSelection.Rank">
+            <summary>
+            Gets the rank of the selection.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.HyperslabSelection.TotalElementCount">
+            <inheritdoc />
+        </member>
+        <member name="M:HDF5.NET.HyperslabSelection.Walk(System.UInt64[])">
+            <inheritdoc />
+        </member>
+        <member name="T:HDF5.NET.Selection">
+            <summary>
+            A base class which represents a selection.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.Selection.TotalElementCount">
+            <summary>
+            Gets the total number of elements which is used to preallocate the returned buffer.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.Selection.Walk(System.UInt64[])">
+            <summary>
+            The walk function is used to walk through the dataset and select the requested data.
+            </summary>
+            <param name="limits">The dataset dimensions.</param>
+            <returns>An enumerable which provides a sequence of steps to select the requested data.</returns>
+        </member>
+        <member name="T:HDF5.NET.SimpleChunkCache">
+            <summary>
+            A simple chunk cache.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.SimpleChunkCache.#ctor(System.Int32,System.UInt64)">
+            <summary>
+            Initializes a new instance of the <see cref="T:HDF5.NET.SimpleChunkCache"/> instance.
+            </summary>
+            <param name="chunkSlotCount">The number of chunks that can be hold in the cache at the same time.</param>
+            <param name="byteCount">The maximum size of the chunk cache in bytes.</param>
+        </member>
+        <member name="P:HDF5.NET.SimpleChunkCache.ChunkSlotCount">
+            <summary>
+            Gets the number of chunks that can be hold in the cache at the same time.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.SimpleChunkCache.ConsumedSlots">
+            <summary>
+            Gets the number of chunk slots that have already been consumed.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.SimpleChunkCache.ByteCount">
+            <summary>
+            Gets the maximum size of the chunk cache in bytes.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.SimpleChunkCache.ConsumedBytes">
+            <summary>
+            Gets the number of consumed bytes of the chunk cache.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.SimpleChunkCache.GetChunkAsync(System.UInt64[],System.Func{System.Threading.Tasks.Task{System.Memory{System.Byte}}})">
+            <inheritdoc />
+        </member>
+        <member name="T:HDF5.NET.Step">
+            <summary>
+            Represents a single unit of data to be selected.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.Step.Coordinates">
+            <summary>
+            Gets the data coordinates.
+            </summary>
+        </member>
+        <member name="P:HDF5.NET.Step.ElementCount">
+            <summary>
+            Gets the number of elements to select along the fastest changing dimension.
+            </summary>
+        </member>
+        <member name="T:HDF5.NET.EndiannessConverterGeneric">
+            <summary>
+            A helper class to convert the endianness of data using hardware acceleration if available.
+            </summary>
+        </member>
+        <member name="M:HDF5.NET.EndiannessConverterGeneric.Convert(System.Int32,System.Span{System.Byte},System.Span{System.Byte})">
+            <summary>
+            Converts the endianness of the given source buffer into the destination buffer.
+            </summary>
+            <param name="bytesOfType">The number of bytes of the underlying data type.</param>
+            <param name="source">The source buffer.</param>
+            <param name="destination">The destination buffer.</param>
+        </member>
+    </members>
+</doc>

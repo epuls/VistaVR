@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/10/nuspec.xsd">
+  <metadata>
+    <id>HDF.PInvoke</id>
+    <version>1.10.11</version>
+    <title>HDF.PInvoke</title>
+    <authors>The HDF Group</authors>
+    <owners>The HDF Group</owners>
+    <licenseUrl>http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING</licenseUrl>
+    <projectUrl>https://github.com/HDFGroup/HDF.PInvoke</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/HDFGroup/HDF.PInvoke/master/images/hdf.png</iconUrl>
+    <description>This package contains PInvoke declarations for the (unmanaged) HDF5 1.10.x C-API. For documenation, see the "Core Libray" at https://portal.hdfgroup.org/display/HDF5/Core+Library.</description>
+    <releaseNotes>HDF5 1.10.x is no longer supported
+This release includes 1.14.3 binaries with 1.10 API compatibility
+Remove globals that are no longer available
+Version APIs for H5L and H5S calls
+Solution and project updates for VS 2022
+Updates paket version</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <language>en-US</language>
+  </metadata>
+</package>

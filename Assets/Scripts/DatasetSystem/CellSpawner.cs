@@ -180,6 +180,7 @@ public class CellSpawner : MonoBehaviour
 
         // Pass default(JobHandle) as the input dependency from the MonoBehaviour.
         // The system will combine this with its own internal Dependency property.
+        /*
         JobHandle spawnHandle = cellSpawningSystem.ScheduleSpawnJob(
             nativeCellData,
             cellEntityPrefab,
@@ -187,6 +188,7 @@ public class CellSpawner : MonoBehaviour
         );
         
         spawnHandle.Complete();
+        */
         
 
         // The MonoBehaviour usually doesn't need to track the returned handle.

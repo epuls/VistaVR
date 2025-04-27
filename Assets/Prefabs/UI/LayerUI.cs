@@ -46,6 +46,11 @@ public class LayerUI : MonoBehaviour
 
     }
 
+    public void SetLayerNameUI(string filterText)
+    {
+        FilterText.text = filterText;
+    }
+
     public void SelectLayer()
     {
         LayerEvents.SelectLayer.Invoke(Layer);

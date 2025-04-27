@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/05/nuspec.xsd">
+  <metadata>
+    <id>PureHDF.SourceGenerator</id>
+    <version>2.1.1</version>
+    <authors>https://github.com/Apollo3zehn</authors>
+    <license type="expression">MIT</license>
+    <licenseUrl>https://licenses.nuget.org/MIT</licenseUrl>
+    <icon>nuget.png</icon>
+    <readme>README.md</readme>
+    <projectUrl>https://apollo3zehn.github.io/PureHDF/</projectUrl>
+    <description>Generates strongly-typed bindings for your specific HDF5 file.</description>
+    <copyright>Apollo3zehn</copyright>
+    <tags>HDF HDF5 hierarchical data file H5 source generator</tags>
+    <repository type="git" url="https://github.com/Apollo3zehn/PureHDF" commit="0466b582ef2c926cd5685aac60659b78d94f6360" />
+    <dependencies>
+      <group targetFramework="net6.0">
+        <dependency id="PureHDF" version="2.1.1" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

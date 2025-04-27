@@ -14,18 +14,21 @@ using UnityEngine.UI;
 public class SpatialDataset : MonoBehaviour
 {
     public Dictionary<string, Vector2> Cells;
-    public Dictionary<string, int> Clusters;
+    public Dictionary<string, string> Clusters;
+    public Dictionary<string, int> ClusterIDs;
+    public Dictionary<int, string> InverseClusterIDs;
 
     public GameObject spawnParent;
     public GameObject bakedClustersParent;
     public GameObject cellSquare;
     public GameObject bakeLayerPrefab;
 
-    public CellSpawner CellSpawner;
+    public CellSpawnManager cellSpawnManager;
+    public ECSDataManipulator dataManipulatorECS;
     
     // Raw Dataset Panel
     public TMP_InputField spatialProjectionPathInputField;
-    public TMP_InputField cellClusteringPathInputField;
+    [FormerlySerializedAs("cellClusteringPathInputField")] public TMP_InputField parquetClusteringColumnInputField;
     public TMP_InputField bakedDatasetPathInputField;
     
     public TMP_InputField loadBakedDatasetPathInputField;
@@ -38,15 +41,15 @@ public class SpatialDataset : MonoBehaviour
     public Camera BakeCamera;
     public GameObject BakeCameraPrefab;
     public int ClusterToSpawn;
-    public int ClusterCount = 11;
-    private int curCluster = 1;
+    private int ClusterCount = 0;
+    private int curCluster = 0;
 
     public List<LayerUI> filters;
 
     public bool AutoBake = false;
     public bool AutoLoadMostRecent = false; // NEED TO IMPLEMENT
     public string cellBarcodeFilePath;
-    public string cellClusterFilePath;
+    [FormerlySerializedAs("cellClusterFilePath")] public string cellClusterColumnNameParquet;
     public string bakedDatasetPath;
     
     
@@ -57,10 +60,11 @@ public class SpatialDataset : MonoBehaviour
     private string bakedClusterImageFileName = "cluster_";
     private string metaDataFileName = "dataset_metadata.json";
     
+    
+    
     void Start()
     {
-        if(AutoBake) LoadAndBake(cellBarcodeFilePath, cellClusterFilePath);
-
+        if(AutoBake) LoadAndBake(cellBarcodeFilePath, cellClusterColumnNameParquet);
         
     }
 
@@ -72,7 +76,7 @@ public class SpatialDataset : MonoBehaviour
         }
         
         spatialProjectionPathInputField.onValueChanged.AddListener(SetSpatialProjPath);
-        cellClusteringPathInputField.onValueChanged.AddListener(SetClusterPath);
+        parquetClusteringColumnInputField.onValueChanged.AddListener(SetClusterColumnName);
         bakedDatasetPathInputField.onValueChanged.AddListener(SetBakePath);
         loadBakedDatasetPathInputField.onValueChanged.AddListener(SetBakePath);
         
@@ -82,7 +86,7 @@ public class SpatialDataset : MonoBehaviour
     private void OnDisable()
     {
         spatialProjectionPathInputField.onValueChanged.RemoveListener(SetSpatialProjPath);
-        cellClusteringPathInputField.onValueChanged.RemoveListener(SetClusterPath);
+        parquetClusteringColumnInputField.onValueChanged.RemoveListener(SetClusterColumnName);
         bakedDatasetPathInputField.onValueChanged.RemoveListener(SetBakePath);
         loadBakedDatasetPathInputField.onValueChanged.RemoveListener(SetBakePath);
         
@@ -94,9 +98,9 @@ public class SpatialDataset : MonoBehaviour
         cellBarcodeFilePath = value;
     }
 
-    void SetClusterPath(string value)
+    void SetClusterColumnName(string value)
     {
-        cellClusterFilePath = value;
+        cellClusterColumnNameParquet = value;
     }
 
     void SetBakePath(string value)
@@ -106,29 +110,104 @@ public class SpatialDataset : MonoBehaviour
 
     public void LoadAndBakeButton()
     {
-        LoadAndBake(cellBarcodeFilePath, cellClusterFilePath);
+        LoadAndBake(cellBarcodeFilePath, cellClusterColumnNameParquet);
         DatasetPanel.SetActive(false);
     }
-    
-    
+
+    private bool _cellCoordsReady = false;
+    private bool _cellClustersReady = false;
     void LoadAndBake(string cellPath, string clusterPath)
     {
-        Cells = CSVImporter.LoadCsvToDictionary(cellPath); 
-        Clusters = CSVImporter.LoadCsvToClusterDictionary(clusterPath);
+        //Cells = CSVImporter.LoadCsvToDictionary(cellPath); 
+        //Clusters = CSVImporter.LoadCsvToClusterDictionary(clusterPath);
+
+        //Cells = ParquetReaderUtility.ReadColumnVector2Dictionary(cellPath, "barcodes", "X", "Y");
+        //Clusters = ParquetReaderUtility.ReadColumnDictionary(clusterPath, "barcodes", "UnsupervisedL1");
+        
+        
+        StartCoroutine(ParquetReaderUtility.ReadColumnVector2DictionaryCoroutine(
+            cellBarcodeFilePath,
+            "barcode",
+            "X",
+            "Y",
+            dict =>
+            {
+                Cells = dict;
+                Debug.Log($"Loaded {Cells.Count} barcoded cells");
+                normalizationFactor = FindMaxAbsoluteValue(Cells);
+                Debug.Log($"Normalization Factor: {normalizationFactor}");
+                _cellCoordsReady = true;
+                StartCoroutine(ParquetReaderUtility.ReadColumnDictionaryCoroutine(
+                    cellBarcodeFilePath,
+                    "barcode",
+                    cellClusterColumnNameParquet,
+                    clustersDict =>
+                    {
+                        Clusters = clustersDict;
+                        Debug.Log($"Loaded cluster labels for {Clusters.Count} barcoded cells");
+                        ClusterIDs = GetClusterIDs(Clusters);
+                        InverseClusterIDs = GetInverseClusterIDs(ClusterIDs);
+                        ClusterCount = ClusterIDs.Count-1;
+                        _cellClustersReady = true;
+                        TryBake();
+                    },
+                    err => {
+                        Debug.LogError($"Failed: {err}");
+                    }
+                ));
+            }
+        ));
+        
+        
+        
+        
+        
+        //cellSpawnManager.Initialize();
+        //cellSpawnManager.LoadMyData(debugCells, debugClusters);
+        //cellSpawnManager.LoadMyData(Cells, Clusters);
+        
+
 
         
-        
-        Debug.Log(Clusters.Count);
-        Debug.Log(Clusters["s_008um_00269_00526-1"]);
+        //Debug.Log(Clusters.Count);
+        //Debug.Log(Clusters["s_008um_00269_00526-1"]);
 
-        normalizationFactor = FindMaxAbsoluteValue(Cells);
-        ClusterCount = FindClusterCount(Clusters);
         
-        Debug.Log($"Normalization Factor: {normalizationFactor}");
+        //ClusterCount = FindClusterCount(Clusters);
+
         
-        Debug.Log($"Baked clusters parent? : {bakedClustersParent}, cluster parent? : {spawnParent}");
-        BakeCluster(curCluster, 1024, bakedClustersParent);
+        //Debug.Log($"Normalization Factor: {normalizationFactor}");
+        //Debug.Log($"Baked clusters parent? : {bakedClustersParent}, cluster parent? : {spawnParent}");
+
+
+        //cellSpawnManager.normalizationFactor = normalizationFactor;
+        //cellSpawnManager.clusterCount = ClusterCount;
         
+        //cellSpawnManager.TriggerSpawn();
+        
+        
+        
+        /*
+        dataManipulatorECS.Initialize();
+        
+        dataManipulatorECS.DisableCluster(0);
+        dataManipulatorECS.DisableCluster(3);
+        dataManipulatorECS.DisableCluster(5);
+        */
+        
+    }
+
+    void TryBake()
+    {
+        if(_cellClustersReady && _cellCoordsReady)
+        {
+            Debug.Log("All data is loaded, baking now.");
+            _cellClustersReady = false;
+            _cellCoordsReady = false;
+            BakeCluster(curCluster, 1024, bakedClustersParent);
+            return;
+        }
+        Debug.Log("Tried to bake but not all data loaded. This is expected and not an error.");
     }
 
 
@@ -160,24 +239,57 @@ public class SpatialDataset : MonoBehaviour
         return maxAbsValue;
     }
     
-    public static int FindClusterCount(Dictionary<string, int> vectorDict)
+    public static int FindClusterCount(Dictionary<string, string> vectorDict)
     {
-        int maxValue = 0;
+        List<string> tmpClusters = new List<string>();
 
-        foreach (KeyValuePair<string, int> entry in vectorDict)
+        foreach (KeyValuePair<string, string> entry in vectorDict)
         {
             // Get the absolute value for both x and y components
-            int val = entry.Value;
-
-            
-            // Update the overall maximum if necessary
-            if (val > maxValue)
+            if (!tmpClusters.Contains(entry.Value))
             {
-                maxValue = val;
+                tmpClusters.Add(entry.Value);
             }
         }
 
-        return maxValue;
+        return tmpClusters.Count;
+    }
+
+    public static Dictionary<string,int> GetClusterIDs(Dictionary<string, string> clusterDict)
+    {
+        int curIdx = 0;
+        Dictionary<string, int> outDict = new Dictionary<string, int>();
+
+        foreach (KeyValuePair<string, string> entry in clusterDict)
+        {
+            //print($"Clusters: {entry.Key} | {entry.Value}");
+            // Get the absolute value for both x and y components
+            if (!outDict.ContainsKey(entry.Value))
+            {
+                outDict.Add(entry.Value, curIdx);
+                curIdx++;
+            }
+        }
+
+        if (outDict.ContainsKey(""))
+        {
+            int tmp = outDict[""];
+            outDict.Remove("");
+            outDict.Add("NO_DATA",tmp);
+        }
+
+        return outDict;
+    }
+
+    public static Dictionary<int, string> GetInverseClusterIDs(Dictionary<string, int> clusterIDs)
+    {
+        Dictionary<int, string> outDict = new Dictionary<int, string>();
+        foreach (var kvp in clusterIDs)
+        {
+            outDict.Add(kvp.Value, kvp.Key);
+        }
+
+        return outDict;
     }
 
 
@@ -215,7 +327,7 @@ public class SpatialDataset : MonoBehaviour
             
             normalizedCoords += offset;
 
-
+/*
             if (Clusters[cell.Key] == ClusterToSpawn)
             {
                 
@@ -228,7 +340,7 @@ public class SpatialDataset : MonoBehaviour
                 spawnedCell.transform.SetParent(spawnParent.transform);
                 spawnedCell.transform.localPosition = normalizedCoords;
             }
-                
+                */
             
         }
     }
@@ -265,23 +377,22 @@ public class SpatialDataset : MonoBehaviour
       
         
         
-        
         foreach (KeyValuePair<string, Vector2> cell in Cells)
         {
-            Vector2 coords = cell.Value;
-            Vector3 normalizedCoords = new Vector3(coords.x / normalizationFactor, 0, coords.y / normalizationFactor);
             
-            normalizedCoords += offset;
+            string clusterName = Clusters[cell.Key] == "" ? "NO_DATA" : Clusters[cell.Key];
+            int clusterID = ClusterIDs[clusterName];
 
-
-            if (Clusters[cell.Key] == id)
+            if (clusterID == id)
             {
+                Vector2 coords = cell.Value;
+                Vector3 normalizedCoords = new Vector3(coords.x / normalizationFactor, 0, coords.y / normalizationFactor);
+                normalizedCoords += offset;
+                
                 spawnedCell = GameObject.Instantiate(cellSquare, Vector3.zero, Quaternion.identity);
                 spawnedCell.transform.SetParent(tmpParent.transform);
                 spawnedCell.transform.localPosition = normalizedCoords;
             }
-                
-            
         }
     
         
@@ -299,21 +410,25 @@ public class SpatialDataset : MonoBehaviour
         spawnedCells.SetActive(false);
         
         // NOTE: This is very important. This builds our UI representation of a layer.
-        LayerManager.Instance.BuildLayer(bakedLayerObj, "Cluster", layerTex, false);
+        LayerManager.Instance.BuildLayer(bakedLayerObj, InverseClusterIDs[curCluster], layerTex, false);
 
         
         if (curCluster < ClusterCount)
         {
             curCluster += 1;
+            LayerEvents.UpdateLayerPositions.Invoke();
             StartCoroutine(WaitAndCapAgain());
         }
         else
         {
             //LayerManager.Instance.BuildDatasetLayers(bakedClustersParent, "Cluster");
             Debug.Log("Dataset loaded!");
+            //LayerManager.Instance.SetClusterNames(ClusterIDs);
             LayerManager.Instance.SetDefaultFilenames(".png");
-            SaveLayerTextures();
+            LayerEvents.UpdateLayerPositions.Invoke();
+            
             SaveMetadata();
+            SaveLayerTextures();
             
         }
     }
@@ -374,6 +489,7 @@ public class SpatialDataset : MonoBehaviour
         container.LayerResolution = 2048; // Example method
         container.NormalizationFactor = normalizationFactor; // Example method
         container.ClusterCount = ClusterCount; // Example method
+        
 
 
         // 3. Convert your runtime Layer objects into LayerData objects
@@ -465,6 +581,7 @@ public class SpatialDataset : MonoBehaviour
             
 
                 string filename = newLayer.AssociatedFileName;
+                Debug.Log($"Associated file: {filename}");
                 string fullFilepath = Path.Combine(bakedDatasetPath, filename);
                 Texture2D loadedT2D = TextureLoader.LoadTexture2DFromFile(fullFilepath);
                 bakedLayerObj.GetComponent<MeshRenderer>().material.SetTexture("_BaseMap", loadedT2D);

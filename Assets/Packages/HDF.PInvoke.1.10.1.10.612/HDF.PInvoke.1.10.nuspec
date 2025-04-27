@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>HDF.PInvoke.1.10</id>
+    <version>1.10.612</version>
+    <authors>The HDF Group</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="file">COPYING</license>
+    <licenseUrl>https://aka.ms/deprecateLicenseUrl</licenseUrl>
+    <projectUrl>https://www.hdfgroup.org/</projectUrl>
+    <iconUrl>https://raw.githubusercontent.com/HDFGroup/HDF.PInvoke/master/images/hdf.png</iconUrl>
+    <description>.NET Standard compatible P/Invoke declarations for the unmanaged HDF5 1.10.x C-API (tested on Windows, Linux and MacOS). For documentation, see the HDF5 support page at https://portal.hdfgroup.org/display/HDF5/HDF5.</description>
+    <copyright>Copyright © 2019</copyright>
+    <tags>HDF HDF5 Hierarchical Data Format</tags>
+    <repository url="https://github.com/HDFGroup/HDF.PInvoke.1.10" />
+    <dependencies>
+      <group targetFramework=".NETStandard2.0" />
+    </dependencies>
+  </metadata>
+</package>

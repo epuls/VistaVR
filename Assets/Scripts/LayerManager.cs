@@ -56,9 +56,22 @@ public class LayerManager : MonoBehaviour
     {
         foreach (Layer l in Layers)
         {
+            Debug.Log($"Setting {l.Name} AssociatedFileName to:{l.Name}{postfix}");
             l.AssociatedFileName = $"{l.Name}{postfix}";
         }
     }
+
+    /*
+    public void SetClusterNames(Dictionary<string, int> clusterIDs)
+    {
+        foreach (KeyValuePair<string, int> entry in clusterIDs)
+        {
+            Layers[entry.Value].Name = entry.Key;
+            Debug.Log($"Setting {Layers[entry.Value]} Name to {entry.Key}");
+            Layers[entry.Value].LayerUIScript.SetLayerNameUI(entry.Key);
+        }
+    }
+    */
 
     public void Swap<T>(IList<T> list, int indexA, int indexB)
     {
@@ -124,7 +137,7 @@ public class LayerManager : MonoBehaviour
         if(!loading)
         {
             index = Layers.Count;
-            lName = $"{layerName} {index}";
+            lName = $"{layerName}";
         }
         else
         {
