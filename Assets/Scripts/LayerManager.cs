@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using UnityEngine.UI;
 
 public class LayerManager : MonoBehaviour
 {
@@ -81,9 +83,16 @@ public class LayerManager : MonoBehaviour
     public void MoveLayerPos(Layer layerToMove, bool up)
     {
         int curIndex = layerToMove.LayerGameObject.transform.GetSiblingIndex();
-        int dir = up ? curIndex - 1 : curIndex + 1;
-        layerToMove.LayerGameObject.transform.SetSiblingIndex(dir);
-        layerToMove.LayerUIGameObject.transform.SetSiblingIndex(dir);
+        int newIndex = up ? curIndex - 1 : curIndex + 1;
+
+        //  If trying to "move up" when at top pos, wrap down to bottom
+        if (newIndex >= layerToMove.LayerGameObject.transform.parent.childCount)
+        {
+            newIndex = 0;
+        }
+        
+        layerToMove.LayerGameObject.transform.SetSiblingIndex(newIndex);
+        layerToMove.LayerUIGameObject.transform.SetSiblingIndex(newIndex);
         
         UpdateLayerIndices();
 
@@ -171,6 +180,16 @@ public class LayerManager : MonoBehaviour
         }
             
         var uiObjTmp = SpawnUIRepresentation(UILayerRepresentationPrefab, UILayerParent);
+        
+        // Very messy, re work options functions to clean up
+        Button[] tmpBtnAr = new Button[1];
+        TextMeshProUGUI[] tmpTxtArr = new TextMeshProUGUI[1];
+        Image[] tmpImArr = new Image[0];
+        tmpBtnAr[0] = uiObjTmp.GetComponentInChildren<Button>();
+        tmpTxtArr[0] = tmpBtnAr[0].gameObject.GetComponentInChildren<TextMeshProUGUI>();
+       
+        
+        Options.Instance.SetUIElementColors(tmpBtnAr, tmpImArr, tmpTxtArr);
         addLayer.LayerUIScript = uiObjTmp.GetComponent<LayerUI>();
         addLayer.LayerUIGameObject = uiObjTmp;
         addLayer.LayerUIScript.SetLayer(layerOb.transform, lName, addLayer);
@@ -182,11 +201,22 @@ public class LayerManager : MonoBehaviour
     public void BuildLoadedLayer(GameObject layerOb, Layer layer, Texture2D texture2D, RenderTexture renderTexture)
     {
         var uiObjTmp = SpawnUIRepresentation(UILayerRepresentationPrefab, UILayerParent);
+        // Very messy, re work options functions to clean up
+        Button[] tmpBtnAr = new Button[1];
+        TextMeshProUGUI[] tmpTxtArr = new TextMeshProUGUI[1];
+        Image[] tmpImArr = new Image[0];
+        tmpBtnAr[0] = uiObjTmp.GetComponentInChildren<Button>();
+        tmpTxtArr[0] = tmpBtnAr[0].gameObject.GetComponentInChildren<TextMeshProUGUI>();
+        Options.Instance.SetUIElementColors(tmpBtnAr, tmpImArr, tmpTxtArr);
+        
+        
+        
         layer.LayerUIScript = uiObjTmp.GetComponent<LayerUI>();
         layer.LayerUIGameObject = uiObjTmp;
         layer.LayerUIScript.SetLayer(layerOb.transform, layer.Name, layer);
         layer.LayerRenderTexture = renderTexture;
         layer.LayerTexture2D = texture2D;
+        layer.LayerGameObject = layerOb;
     }
 
     // Expects a layout group to manage pos

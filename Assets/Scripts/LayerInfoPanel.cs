@@ -26,7 +26,8 @@ public class LayerInfoPanel : MonoBehaviour
     public void MoveLayer(bool up)
     {
         //bool up = dir == 0 ? true : false;
-        LayerEvents.MoveLayer.Invoke(_selectedLayer, up);
+        if(_selectedLayer != null)
+            LayerEvents.MoveLayer.Invoke(_selectedLayer, up);
     }
 
 

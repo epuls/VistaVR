@@ -23,8 +23,8 @@ public class SpatialDataset : MonoBehaviour
     public GameObject cellSquare;
     public GameObject bakeLayerPrefab;
 
-    public CellSpawnManager cellSpawnManager;
-    public ECSDataManipulator dataManipulatorECS;
+    //public CellSpawnManager cellSpawnManager;
+    //public ECSDataManipulator dataManipulatorECS;
     
     // Raw Dataset Panel
     public TMP_InputField spatialProjectionPathInputField;
@@ -47,10 +47,10 @@ public class SpatialDataset : MonoBehaviour
     public List<LayerUI> filters;
 
     public bool AutoBake = false;
-    public bool AutoLoadMostRecent = false; // NEED TO IMPLEMENT
     public string cellBarcodeFilePath;
-    [FormerlySerializedAs("cellClusterFilePath")] public string cellClusterColumnNameParquet;
+    public string cellClusterColumnNameParquet;
     public string bakedDatasetPath;
+    public int resolution = 2048;
     
     
     public bool datasetLoaded = false;
@@ -159,42 +159,6 @@ public class SpatialDataset : MonoBehaviour
         ));
         
         
-        
-        
-        
-        //cellSpawnManager.Initialize();
-        //cellSpawnManager.LoadMyData(debugCells, debugClusters);
-        //cellSpawnManager.LoadMyData(Cells, Clusters);
-        
-
-
-        
-        //Debug.Log(Clusters.Count);
-        //Debug.Log(Clusters["s_008um_00269_00526-1"]);
-
-        
-        //ClusterCount = FindClusterCount(Clusters);
-
-        
-        //Debug.Log($"Normalization Factor: {normalizationFactor}");
-        //Debug.Log($"Baked clusters parent? : {bakedClustersParent}, cluster parent? : {spawnParent}");
-
-
-        //cellSpawnManager.normalizationFactor = normalizationFactor;
-        //cellSpawnManager.clusterCount = ClusterCount;
-        
-        //cellSpawnManager.TriggerSpawn();
-        
-        
-        
-        /*
-        dataManipulatorECS.Initialize();
-        
-        dataManipulatorECS.DisableCluster(0);
-        dataManipulatorECS.DisableCluster(3);
-        dataManipulatorECS.DisableCluster(5);
-        */
-        
     }
 
     void TryBake()
@@ -204,7 +168,7 @@ public class SpatialDataset : MonoBehaviour
             Debug.Log("All data is loaded, baking now.");
             _cellClustersReady = false;
             _cellCoordsReady = false;
-            BakeCluster(curCluster, 1024, bakedClustersParent);
+            BakeCluster(curCluster, resolution, bakedClustersParent);
             return;
         }
         Debug.Log("Tried to bake but not all data loaded. This is expected and not an error.");
@@ -327,7 +291,7 @@ public class SpatialDataset : MonoBehaviour
             
             normalizedCoords += offset;
 
-/*
+           /*
             if (Clusters[cell.Key] == ClusterToSpawn)
             {
                 
@@ -340,7 +304,7 @@ public class SpatialDataset : MonoBehaviour
                 spawnedCell.transform.SetParent(spawnParent.transform);
                 spawnedCell.transform.localPosition = normalizedCoords;
             }
-                */
+            */
             
         }
     }
@@ -435,77 +399,36 @@ public class SpatialDataset : MonoBehaviour
 
     void SaveMetadata()
     {
-        /*
-        // 1. Create an instance of the metadata container
-        DatasetMetadata dataToSave = new DatasetMetadata();
-
-        // 2. Populate it with current values
-        dataToSave.clusterCount = ClusterCount;
-        dataToSave.normalizationFactor = normalizationFactor;
-        dataToSave.datasetName = DatasetName;
-        dataToSave.indices = new List<int>();
-        dataToSave.layerNames = new List<string>();
-        dataToSave.layerTypes = new List<int>();
-        
-        for (int i = 0; i < LayerManager.Instance.Layers.Count; i++)
-        {
-            Layer cur = LayerManager.Instance.Layers[i];
-            dataToSave.indices.Add(cur.Index);
-            dataToSave.layerNames.Add(cur.Name);
-            dataToSave.layerTypes.Add((int)cur.LayerType);
-        }
-        // Set any other fields you added...
-
-        // 3. Define the save path
-        string fileName = metaDataFileName;
-        string fullPath = Path.Combine(bakedDatasetPath, fileName);
-
-        // 4. Call the static SaveMetadata function
-        bool success = DatasetMetadataManager.SaveMetadata(dataToSave, fullPath);
-
-        if (success)
-        {
-            Debug.Log("Data saved!");
-        }
-        else
-        {
-            Debug.LogError("Failed to save data.");
-        }
-        */
         
         if (LayerManager.Instance == null || LayerManager.Instance.Layers == null) // Assuming LayerManager has a List<Layer> Layers
         {
             Debug.LogError("LayerManager or its Layers list is missing!");
             return;
         }
-        
-        
 
         // 1. Create the main container
         DatasetMetadataContainer container = new DatasetMetadataContainer();
 
         // 2. Populate dataset-level metadata (get these values from your tool/manager)
-        container.DatasetName = "JSON_TEST"; // Example method
-        container.LayerResolution = 2048; // Example method
-        container.NormalizationFactor = normalizationFactor; // Example method
-        container.ClusterCount = ClusterCount; // Example method
-        
+        container.DatasetName = "JSON_TEST"; 
+        container.LayerResolution = resolution; 
+        container.NormalizationFactor = normalizationFactor;
+        container.ClusterCount = ClusterCount; 
 
-
-        // 3. Convert your runtime Layer objects into LayerData objects
-        container.Layers = LayerManager.Instance.Layers // Assuming layerManager.Layers is List<Layer>
-            .Where(layer => layer != null) // Avoid null layers if possible
-            .Select(runtimeLayer => new LayerData(runtimeLayer)) // Use the constructor
+        // 3. Convert runtime Layer objects into LayerData objects
+        container.Layers = LayerManager.Instance.Layers 
+            .Where(layer => layer != null) 
+            .Select(runtimeLayer => new LayerData(runtimeLayer)) 
             .ToList();
 
-        // 4. (Optional but recommended) Ensure layers are sorted by index if not already guaranteed
+        // 4. Ensure layers are sorted by index 
         container.Layers = container.Layers.OrderBy(l => l.Index).ToList();
         
         string fileName = metaDataFileName;
         string saveFilePath = Path.Combine(bakedDatasetPath, fileName);
 
 
-        // 5. Call the static save method
+        
         bool success = DatasetMetadataManager_Json.SaveMetadata(container, saveFilePath);
 
         if (success)
@@ -550,7 +473,6 @@ public class SpatialDataset : MonoBehaviour
         // Access any other fields you added...
         */
         
-                // 1. Call the static load method
         DatasetMetadataContainer loadedData = DatasetMetadataManager_Json.LoadMetadata(loadFilePath);
 
         if (loadedData == null)
@@ -578,6 +500,7 @@ public class SpatialDataset : MonoBehaviour
                 var bakedLayerObj = GameObject.Instantiate(bakeLayerPrefab, Vector3.zero, Quaternion.identity);
                 bakedLayerObj.name = $"{newLayer.Name}";
                 bakedLayerObj.transform.SetParent(clusterParent.transform);
+                
             
 
                 string filename = newLayer.AssociatedFileName;
@@ -680,7 +603,7 @@ public class SpatialDataset : MonoBehaviour
     {
         Debug.Log("Waiting for camera capture");
         yield return new WaitForSecondsRealtime(1.0f);
-        BakeCluster(curCluster, 1024, bakedClustersParent);
+        BakeCluster(curCluster, resolution, bakedClustersParent);
     }
     
     

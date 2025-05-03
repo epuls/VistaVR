@@ -20,6 +20,10 @@ public class LayerUI : MonoBehaviour
     private void OnEnable()
     {
         LayerEvents.ToggleAllLayers.AddListener(ToggleLayer);
+        if (Options.Instance._UIColorMode == Options.UIColorMode.DarkMode)
+        {
+            LayerToggle.colors = Options.Instance.darkModeToggleColorBlock;
+        }
     }
 
     private void OnDisable()

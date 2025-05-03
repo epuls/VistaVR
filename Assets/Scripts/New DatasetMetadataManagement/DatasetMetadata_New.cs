@@ -121,14 +121,12 @@ public class DatasetMetadataContainer
     public DatasetMetadataContainer()
     {
         DatasetName = "Untitled Dataset";
-        LayerResolution = 512; // Example default
-        NormalizationFactor = 1.0f; // Example default
-        ClusterCount = 0; // Example default
+        LayerResolution = 512; 
+        NormalizationFactor = 1.0f; 
+        ClusterCount = 0; 
         Layers = new List<LayerData>();
     }
 }
 
-// --- Placeholder for your Layer class (adapt property names) ---
-// You would have your actual Layer class definition elsewhere
 
 

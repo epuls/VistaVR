@@ -49,6 +49,10 @@ public class DatasetManipulator : MonoBehaviour
                  Debug.LogWarning($"Warning in {GetType().Name}: Camera was not assigned in the Inspector. Found and assigned the 'MainCamera'.", this);
             }
         }
+
+        var sens = Options.Instance.GetDataManipSensitivity();
+        rotationSpeed = sens.x;
+        translationSpeed = sens.y;
     }
 
     void Update()
